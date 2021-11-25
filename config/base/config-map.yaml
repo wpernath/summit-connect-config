@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: summit-demo
+data:
+  QUARKUS_DATASOURCE_REACTIVE_URL: vertx-reactive:postgresql://summit-dev-db/summitdb
+  QUARKUS_DATASOURCE_USERNAME: summit
+  QUARKUS_DATASOURCE_PASSWORD: summit
+  QUARKUS_DATASOURCE_DB-KIND: postgresql
+
+

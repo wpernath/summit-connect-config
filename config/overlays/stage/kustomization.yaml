@@ -7,36 +7,24 @@ bases:
 
 # in stage we have 2 replicas
 replicas:
-- name: person-service
+- name: summit-demo
   count: 2
 
 # replace the image tag of the container with stage
 images:
-  - name: image-registry.openshift-image-registry.svc:5000/book-dev/person-service:latest
-    newName: quay.io/wpernath/person-service
-    newTag: v1.0.0-test
-
-# generate a configmap 
-configMapGenerator:
-  - name: app-config
-    literals:
-      - APP_GREETING=We are in STAGING mode
+  - name: quay.io/wpernath/summit-demo:latest
+    newName: quay.io/wpernath/summit-demo
+    newTag: 1.0.0
 
 # apply some patches
 patches:
-  # apply health checks to deployment
-  - path: apply-health-checks.yaml
-    target:
-      version: v1
-      kind: Deployment
-      name: person-service
 
 # this patch needs to be done, because kustomize does not change 
 # the route target service name
   - patch: |-
       - op: replace
         path: /spec/to/name
-        value: stage-person-service
+        value: stage-summit-demo
     target:
       kind: Route
 

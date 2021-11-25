@@ -1,14 +1,18 @@
 apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
+  annotations:
+    app.quarkus.io/commit-id: 662c665e805546e88e01f8f49b3f753856f12f39
+    app.quarkus.io/build-timestamp: 2021-11-25 - 22:37:06 +0000
   labels:
-    app: person-service
-  name: person-service
+    app.kubernetes.io/name: summit-demo
+    app.kubernetes.io/version: "1.0"
+  name: summit-demo
 spec:
   port:
     targetPort: 8080-tcp
   to:
     kind: Service
-    name: person-service
+    name: summit-demo
     weight: 100
   wildcardPolicy: None

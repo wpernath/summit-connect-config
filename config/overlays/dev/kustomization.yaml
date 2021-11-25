@@ -10,22 +10,17 @@ commonLabels:
 
 # replace the image tag of the container with latest
 images:
-- name: image-registry.openshift-image-registry.svc:5000/book-dev/person-service:latest
-  newName: quay.io/wpernath/person-service
+- name: quay.io/wpernath/summit-demo:latest
+  newName: quay.io/wpernath/summit-demo
   newTag: latest
 
-# generate a configmap 
-configMapGenerator:
-  - name: app-config
-    literals:
-      - APP_GREETING=We are in DEVELOPMENT mode
-      
+     
 # this patch needs to be done, because kustomize does not change 
 # the route target service name
 patches:
 - patch: |-
     - op: replace
       path: /spec/to/name
-      value: dev-person-service
+      value: dev-summit-demo
   target:
     kind: Route
