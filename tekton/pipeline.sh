@@ -114,7 +114,7 @@ command.init() {
   oc apply -f tasks/kustomize-task.yaml
   oc apply -f tasks/maven-task.yaml
 
-  oc apply -f pipelines/tekton-pipeline.yaml
+  oc apply -f pipelines/dev-pipeline.yaml
 }
 
 

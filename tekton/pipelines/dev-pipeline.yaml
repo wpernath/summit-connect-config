@@ -1,0 +1,125 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: dev-pipeline
+spec:
+  params:
+    - default: 'https://github.com/wpernath/summit-connect-quarkus-demo.git'
+      description: URL of the Git Repo for the source
+      name: git-url
+      type: string
+    - default: main
+      description: revision to be used
+      name: git-revision
+      type: string
+    - default: .
+      description: context dir within git repo where the source code is
+      name: git-context
+      type: string
+    - default: 'https://github.com/wpernath/summit-connect-config.git'
+      description: URL of the config repository
+      name: config-git-url
+      type: string
+    - default: main
+      description: revision of the config repo to use
+      name: config-git-revision
+      type: string
+    - default: config/overlays/dev
+      description: real config within config git to use
+      name: kustomize-dir
+      type: string
+    - default: 'quay.io/wpernath/summit-demo:latest'
+      description: Image to produce
+      name: image-name
+      type: string
+    - default: wpernath
+      description: 'username for image repo '
+      name: repo-username
+      type: string
+    - description: password for image repo
+      name: repo-password
+      type: string
+  tasks:
+    - name: clone-source
+      params:
+        - name: url
+          value: $(params.git-url)
+        - name: revision
+          value: $(params.git-revision)
+        - name: submodules
+          value: 'true'
+        - name: subdirectory
+          value: the-source
+        - name: deleteExisting
+          value: 'true'
+        - name: verbose
+          value: 'false'
+      taskRef:
+        kind: ClusterTask
+        name: git-clone
+      workspaces:
+        - name: output
+          workspace: source
+    - name: package
+      params:
+        - name: GOALS
+          value:
+            - package
+            - '-DskipTests'
+        - name: CONTEXT_DIR
+          value: the-source
+      runAfter:
+        - clone-source
+        - clone-config
+      taskRef:
+        kind: Task
+        name: maven-caching
+      workspaces:
+        - name: source
+          workspace: source
+        - name: maven-settings
+          workspace: maven-settings
+    - name: build-image
+      params:
+        - name: GOALS
+          value:
+            - package
+            - '-DskipTests'
+            - '-Dquarkus.container-image.build=true'
+            - '-Dquarkus.container-image.push=true'
+            - '-Dquarkus.container-image.username=$(params.repo-username)'
+            - '-Dquarkus.container-image.password=$(params.repo-password)'
+            - '-Dquarkus.container-image.image=$(params.image-name)'
+        - name: CONTEXT_DIR
+          value: the-source
+      runAfter:
+        - package
+      taskRef:
+        kind: Task
+        name: maven-caching
+      workspaces:
+        - name: source
+          workspace: source
+        - name: maven-settings
+          workspace: maven-settings
+    - name: clone-config
+      params:
+        - name: url
+          value: $(params.config-git-url)
+        - name: revision
+          value: $(params.config-git-revision)
+        - name: subdirectory
+          value: the-config
+        - name: deleteExisting
+          value: 'true'
+        - name: verbose
+          value: 'false'
+      taskRef:
+        kind: ClusterTask
+        name: git-clone
+      workspaces:
+        - name: output
+          workspace: source
+  workspaces:
+    - name: source
+    - name: maven-settings
