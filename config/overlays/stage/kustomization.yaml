@@ -1,30 +1,34 @@
-namePrefix: stage-  
+namePrefix: stage-
 commonLabels:
   variant: stage
 
-bases:
-- ../../base
 
 # in stage we have 2 replicas
 replicas:
-- name: summit-demo
-  count: 2
+- count: 2
+  name: summit-demo
 
 # replace the image tag of the container with stage
 images:
-  - name: quay.io/wpernath/summit-demo:latest
-    newName: quay.io/wpernath/summit-demo
-    newTag: 1.0.0
+- digest: sha256:892165d2db290ccee45e18d9198f689052859667b8e17307b1ad1fd530572b22
+  name: quay.io/wpernath/simple-quarkus:latest
+  newName: quay.io/wpernath/summit-demo:v1.0.1
+- name: quay.io/wpernath/summit-demo:latest
+  newName: quay.io/wpernath/summit-demo
+  newTag: 1.0.0
 
 # apply some patches
-patches:
 
 # this patch needs to be done, because kustomize does not change 
 # the route target service name
-  - patch: |-
-      - op: replace
-        path: /spec/to/name
-        value: stage-summit-demo
-    target:
-      kind: Route
-
+patches:
+- patch: |-
+    - op: replace
+      path: /spec/to/name
+      value: stage-summit-demo
+  target:
+    kind: Route
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+- ../../base
