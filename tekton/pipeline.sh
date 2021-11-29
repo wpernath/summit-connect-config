@@ -7,7 +7,10 @@ declare COMMAND="help"
 
 GIT_URL=https://github.com/wpernath/summit-connect-quarkus-demo.git
 GIT_REVISION=main
-PIPELINE=build-and-push-image
+GIT_USER=""
+GIT_PASSWORD=""
+
+PIPELINE=dev-pipeline
 CONTEXT_DIR=the-source
 IMAGE_NAME=quay.io/wpernath/summit-demo
 IMAGE_USER=wpernath
@@ -36,30 +39,33 @@ command.help() {
       pipeline.sh [command] [options]
   
   Examples:
-      pipeline.sh init 
-      pipeline.sh start -u wpernath -p <nope> -t art-tekton
+      pipeline.sh init --git-user <user> --git-password <pwd> --registry-user <user> --registry-password
+      pipeline.sh build -u wpernath -p <nope> 
       pipeline.sh logs
   
   COMMANDS:
       init                           creates ConfigMap, Tasks and Pipelines into current context
-      start                          starts the given pipeline
+      build                          starts the dev-pipeline
+      stage                          starts the stage-pipeline
       logs                           shows logs of the last pipeline run
       help                           Help about this command
 
   OPTIONS:
       -u, --registry-user           User to store the image into quay.io ($IMAGE_USER)
       -p, --registry-password       Password to store the image into quay.io ($IMAGE_PASSWORD)
+      --git-user                    User to read/write into github
+      --git-password                Password to read/write into github
       -c, --context-dir             Which context-dir to user ($CONTEXT_DIR)
       -t, --target-namespace        Which target namespace to start the app ($TARGET_NAMESPACE)
       -g, --git-repo                Which quarkus repository to clone ($GIT_URL)
       -r, --git-revision            Which git revision to use ($GIT_REVISION)
-      
+
 EOF
 }
 
 while (( "$#" )); do
   case "$1" in
-    start|logs|init)
+    build|stage|logs|init)
       COMMAND=$1
       shift
       ;;
@@ -77,6 +83,14 @@ while (( "$#" )); do
       ;;
     -p|--registry-password)
       IMAGE_PASSWORD=$2
+      shift 2
+      ;;
+    --git-user)
+      GIT_USER=$2
+      shift 2
+      ;;
+    --git-password)
+      GIT_PASSWORD=$2
       shift 2
       ;;
     -g|--git-repo)
@@ -110,10 +124,46 @@ command.init() {
   pwd
   oc apply -f infra/maven-settings-cm.yaml
   oc apply -f infra/maven-artifact-cache-pvc.yaml
+  oc apply -f infra/sa.yaml
 
-  oc apply -f tasks/kustomize-task.yaml
+  # prepare secrets for SA
+  if [ $GIT_USER = "" ]; then
+    command.help
+    err "You have to provide GIT credentials via --git-user and --git-password"
+  fi
+
+  cat > /tmp/secret.yaml <<-EOF
+apiVersion: v1
+kind: Secret
+metadata:
+  name: git-user-pass
+  annotations:
+    tekton.dev/git-0: https://github.com # Described below
+type: kubernetes.io/basic-auth
+stringData:
+  username: $GIT_USER
+  password: $GIT_PASSWORD
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  annotations:
+    tekton.dev/docker-0: https://quay.io
+  name: quay-push-secret
+type: kubernetes.io/basic-auth
+stringData:
+  username: $IMAGE_USER
+  password: $IMAGE_PASSWORD
+EOF
+
+  oc apply -f /tmp/secret.yaml
+
+  # apply tasks 
   oc apply -f tasks/maven-task.yaml
+  oc apply -f tasks/extract-digest-task.yaml
+  oc apply -f tasks/git-update-deployment.yaml
 
+  # apply pipelines
   oc apply -f pipelines/dev-pipeline.yaml
 }
 
@@ -122,7 +172,7 @@ command.logs() {
     tkn pr logs -f -L
 }
 
-command.start() {
+command.build() {
   cat > /tmp/pipelinerun.yaml <<-EOF
 apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
@@ -130,30 +180,18 @@ metadata:
   name: $PIPELINE-run-$(date "+%Y%m%d-%H%M%S")
 spec:
   params:
-    - name: git-url
-      value: '$GIT_URL'
-    - name: git-revision
-      value: $GIT_REVISION
-    - name: context-dir
-      value: $CONTEXT_DIR
-    - name: image-name
-      value: $IMAGE_NAME
-    - name: image-username
-      value: $IMAGE_USER
-    - name: image-password
+    - name: repo-password
       value: $IMAGE_PASSWORD
-    - name: target-namespace
-      value: $TARGET_NAMESPACE
   workspaces:
-    - name: shared-workspace
+    - name: source
       persistentVolumeClaim:
         claimName: builder-pvc
     - configMap:
         name: maven-settings
       name: maven-settings
   pipelineRef:
-    name: $PIPELINE
-  serviceAccountName: pipeline
+    name: dev-pipeline
+  serviceAccountName: pipeline-bot
 EOF
 
     oc apply -f /tmp/pipelinerun.yaml
