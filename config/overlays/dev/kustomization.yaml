@@ -10,9 +10,9 @@ commonLabels:
 
 # replace the image tag of the container with latest
 images:
-- name: quay.io/wpernath/summit-demo:latest
-  newName: quay.io/wpernath/summit-demo
-  newTag: latest
+- digest: sha256:892165d2db290ccee45e18d9198f689052859667b8e17307b1ad1fd530572b22
+  name: quay.io/wpernath/summit-demo:latest
+  newName: quay.io/wpernath/summit-demo:latest
 
      
 # this patch needs to be done, because kustomize does not change 
