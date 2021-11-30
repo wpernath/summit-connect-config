@@ -32,3 +32,32 @@ patches:
       value: dev-summit-demo
   target:
     kind: Route
+
+# Patch deploymentConfig of postgresql to reference the correct secret
+- patch: |-
+    - op: replace
+      path: /spec/selector/name
+      value: dev-summit-db
+  target:
+    kind: DeploymentConfig
+
+- patch: |-
+    - op: replace
+      path: /spec/template/spec/containers/0/env/0/valueFrom/secretKeyRef/name
+      value: dev-summit-db
+  target:
+    kind: DeploymentConfig
+
+- patch: |-
+    - op: replace
+      path: /spec/template/spec/containers/0/env/1/valueFrom/secretKeyRef/name
+      value: dev-summit-db
+  target:
+    kind: DeploymentConfig
+
+- patch: |-
+    - op: replace
+      path: /spec/template/spec/containers/0/env/2/valueFrom/secretKeyRef/name
+      value: dev-summit-db
+  target:
+    kind: DeploymentConfig

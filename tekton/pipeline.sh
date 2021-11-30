@@ -41,7 +41,7 @@ command.help() {
   Examples:
       pipeline.sh init --git-user <user> --git-password <pwd> --registry-user <user> --registry-password
       pipeline.sh build -u wpernath -p <nope> 
-      pipeline.sh stage -r 1.2.5
+      pipeline.sh stage -r v1.2.5 -g <config-git-rep> -i <target-image>
       pipeline.sh logs
   
   COMMANDS:
@@ -56,6 +56,7 @@ command.help() {
       -p, --registry-password       Password to store the image into quay.io ($IMAGE_PASSWORD)
       --git-user                    User to read/write into github
       --git-password                Password to read/write into github
+      -i, --target-image            Target image name to push to ($IMAGE_NAME)
       -c, --context-dir             Which context-dir to user ($CONTEXT_DIR)
       -t, --target-namespace        Which target namespace to start the app ($TARGET_NAMESPACE)
       -g, --git-repo                Which quarkus repository to clone ($GIT_URL)
@@ -72,6 +73,10 @@ while (( "$#" )); do
       ;;
     -c|--context-dir)
       CONTEXT_DIR=$2
+      shift 2
+      ;;
+    -i|--target-image)
+      IMAGE_NAME=$2
       shift 2
       ;;
     -t|--target-namespace)

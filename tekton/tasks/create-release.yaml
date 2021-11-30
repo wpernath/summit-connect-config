@@ -49,6 +49,7 @@ spec:
         git add $(params.kustomize-dir)/kustomization.yaml
         git commit -m "[ci] Branch for $(params.release-name) release"
         
+        
         git push --set-upstream origin release-$(params.release-name)
 
         RESULT_SHA="$(git rev-parse HEAD | tr -d '\n')"

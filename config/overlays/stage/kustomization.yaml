@@ -1,3 +1,9 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+- ../../base
+
 namePrefix: stage-
 commonLabels:
   variant: stage
@@ -34,7 +40,32 @@ patches:
       value: stage-summit-demo
   target:
     kind: Route
-apiVersion: kustomize.config.k8s.io/v1beta1
-kind: Kustomization
-resources:
-- ../../base
+# Patch deploymentConfig of postgresql to reference the correct secret
+- patch: |-
+    - op: replace
+      path: /spec/selector/name
+      value: stage-summit-db
+  target:
+    kind: DeploymentConfig
+
+- patch: |-
+    - op: replace
+      path: /spec/template/spec/containers/0/env/0/valueFrom/secretKeyRef/name
+      value: stage-summit-db
+  target:
+    kind: DeploymentConfig
+
+- patch: |-
+    - op: replace
+      path: /spec/template/spec/containers/0/env/1/valueFrom/secretKeyRef/name
+      value: stage-summit-db
+  target:
+    kind: DeploymentConfig
+
+- patch: |-
+    - op: replace
+      path: /spec/template/spec/containers/0/env/2/valueFrom/secretKeyRef/name
+      value: stage-summit-db
+  target:
+    kind: DeploymentConfig
+
