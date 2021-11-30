@@ -37,6 +37,7 @@ patches:
       value: dev-summit-demo
   target:
     kind: Route
+    
 - patch: |-
     - op: replace
       path: /spec/selector/name

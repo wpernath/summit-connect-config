@@ -50,6 +50,20 @@ patches:
 
 - patch: |-
     - op: replace
+      path: /spec/template/metadata/labels/name
+      value: stage-summit-db
+  target:
+    kind: DeploymentConfig
+
+- patch: |-
+    - op: replace
+      path: /spec/template/spec/volumes/0/persistentVolumeClaim/claimName
+      value: stage-summit-db
+  target:
+    kind: DeploymentConfig
+
+- patch: |-
+    - op: replace
       path: /spec/template/spec/containers/0/env/0/valueFrom/secretKeyRef/name
       value: stage-summit-db
   target:
