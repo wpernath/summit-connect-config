@@ -43,9 +43,17 @@ patches:
       value: dev-summit-db
   target:
     kind: DeploymentConfig
+
 - patch: |-
     - op: replace
       path: /spec/template/metadata/labels/name
+      value: dev-summit-db
+  target:
+    kind: DeploymentConfig
+
+- patch: |-
+    - op: replace
+      path: /spec/template/spec/volumes/0/persistentVolumeClaim/claimName
       value: dev-summit-db
   target:
     kind: DeploymentConfig
