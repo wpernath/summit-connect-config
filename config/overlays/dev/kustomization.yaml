@@ -9,16 +9,16 @@ commonLabels:
 
 # generate a configmap 
 configMapGenerator:
-  - name: summit-demo
-    literals:
-      - QUARKUS_DATASOURCE_REACTIVE_URL=vertx-reactive:postgresql://summit-dev-db/summitdb
-      - QUARKUS_DATASOURCE_USERNAME=summit
-      - QUARKUS_DATASOURCE_PASSWORD=summit
-      - QUARKUS_DATASOURCE_DB-KIND=postgresql
+- literals:
+  - QUARKUS_DATASOURCE_REACTIVE_URL=vertx-reactive:postgresql://summit-dev-db/summitdb
+  - QUARKUS_DATASOURCE_USERNAME=summit
+  - QUARKUS_DATASOURCE_PASSWORD=summit
+  - QUARKUS_DATASOURCE_DB-KIND=postgresql
+  name: summit-demo
 
 # replace the image tag of the container with latest
 images:
-- digest: sha256:892165d2db290ccee45e18d9198f689052859667b8e17307b1ad1fd530572b22
+- digest: sha256:c03efbd6b86ef678574828cf89ac67fe981c9573d83fcd2b90780d3a67e5de5f
   name: quay.io/wpernath/summit-demo:latest
   newName: quay.io/wpernath/summit-demo:latest
 
