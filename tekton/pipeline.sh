@@ -41,6 +41,7 @@ command.help() {
   Examples:
       pipeline.sh init --git-user <user> --git-password <pwd> --registry-user <user> --registry-password
       pipeline.sh build -u wpernath -p <nope> 
+      pipeline.sh stage -r 1.2.5
       pipeline.sh logs
   
   COMMANDS:
@@ -162,14 +163,39 @@ EOF
   oc apply -f tasks/maven-task.yaml
   oc apply -f tasks/extract-digest-task.yaml
   oc apply -f tasks/git-update-deployment.yaml
+  oc apply -f tasks/create-release.yaml
+  oc apply -f tasks/extract-digest-from-kustomize-task.yaml
 
   # apply pipelines
   oc apply -f pipelines/dev-pipeline.yaml
+  oc apply -f pipelines/stage-release.yaml
 }
 
 
 command.logs() {
     tkn pr logs -f -L
+}
+
+command.stage() {
+  cat > /tmp/stage-pr.yaml <<-EOF
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: stage-pipeline-run-$(date "+%Y%m%d-%H%M%S")
+spec:
+  params:
+    - name: release-name
+      value: $GIT_REVISION
+  workspaces:
+    - name: shared-workspace
+      persistentVolumeClaim:
+        claimName: builder-pvc
+  pipelineRef:
+    name: stage-pipeline
+  serviceAccountName: pipeline-bot
+EOF
+
+    oc apply -f /tmp/stage-pr.yaml
 }
 
 command.build() {

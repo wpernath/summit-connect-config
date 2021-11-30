@@ -8,6 +8,15 @@ replicas:
 - count: 2
   name: summit-demo
 
+# generate a configmap 
+configMapGenerator:
+  - name: summit-demo
+    literals:
+      - QUARKUS_DATASOURCE_REACTIVE_URL=vertx-reactive:postgresql://summit-stage-db/summitdb
+      - QUARKUS_DATASOURCE_USERNAME=summit
+      - QUARKUS_DATASOURCE_PASSWORD=summit
+      - QUARKUS_DATASOURCE_DB-KIND=postgresql
+
 # replace the image tag of the container with stage
 images:
 - digest: sha256:892165d2db290ccee45e18d9198f689052859667b8e17307b1ad1fd530572b22

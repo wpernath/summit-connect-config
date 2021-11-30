@@ -34,31 +34,11 @@ spec:
                 name: summit-demo
           image: quay.io/wpernath/summit-demo:latest
           imagePullPolicy: Always
-          livenessProbe:
-            failureThreshold: 3
-            httpGet:
-              path: /q/health/live
-              port: 8080
-              scheme: HTTP
-            initialDelaySeconds: 0
-            periodSeconds: 30
-            successThreshold: 1
-            timeoutSeconds: 10
           name: summit-demo
           ports:
             - containerPort: 8080
               name: http
               protocol: TCP
-          readinessProbe:
-            failureThreshold: 3
-            httpGet:
-              path: /q/health/ready
-              port: 8080
-              scheme: HTTP
-            initialDelaySeconds: 20
-            periodSeconds: 45
-            successThreshold: 1
-            timeoutSeconds: 10
           resources:
             limits:
               cpu: 500m

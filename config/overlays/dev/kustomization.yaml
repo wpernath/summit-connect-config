@@ -7,6 +7,14 @@ namePrefix: dev-
 commonLabels:
   variant: development
 
+# generate a configmap 
+configMapGenerator:
+  - name: summit-demo
+    literals:
+      - QUARKUS_DATASOURCE_REACTIVE_URL=vertx-reactive:postgresql://summit-dev-db/summitdb
+      - QUARKUS_DATASOURCE_USERNAME=summit
+      - QUARKUS_DATASOURCE_PASSWORD=summit
+      - QUARKUS_DATASOURCE_DB-KIND=postgresql
 
 # replace the image tag of the container with latest
 images:
