@@ -131,6 +131,5 @@ items:
         lastTriggeredImage: ""
       type: ImageChange
     - type: ConfigChange
-  status: {}
 kind: List
 metadata: {}

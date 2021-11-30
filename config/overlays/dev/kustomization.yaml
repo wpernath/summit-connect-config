@@ -10,7 +10,7 @@ commonLabels:
 # generate a configmap 
 configMapGenerator:
 - literals:
-  - QUARKUS_DATASOURCE_REACTIVE_URL=vertx-reactive:postgresql://stage-summit-db/summitdb
+  - QUARKUS_DATASOURCE_REACTIVE_URL=vertx-reactive:postgresql://dev-summit-db/summitdb
   - QUARKUS_DATASOURCE_USERNAME=summit
   - QUARKUS_DATASOURCE_PASSWORD=summit
   - QUARKUS_DATASOURCE_DB-KIND=postgresql
@@ -37,6 +37,13 @@ patches:
 - patch: |-
     - op: replace
       path: /spec/selector/name
+      value: dev-summit-db
+  target:
+    kind: DeploymentConfig
+
+- patch: |-
+    - op: replace
+      path: /spec/template/metadata/labels/name
       value: dev-summit-db
   target:
     kind: DeploymentConfig
