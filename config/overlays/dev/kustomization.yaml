@@ -18,13 +18,18 @@ configMapGenerator:
 
 # replace the image tag of the container with latest
 images:
-- digest: sha256:c03efbd6b86ef678574828cf89ac67fe981c9573d83fcd2b90780d3a67e5de5f
+- digest: sha256:287d8ed4dda7e679fd3164a15e0b8dc5b8dd4545363f6abca467b87d5abe2311
   name: quay.io/wpernath/summit-demo:latest
   newName: quay.io/wpernath/summit-demo:latest
 
      
 # this patch needs to be done, because kustomize does not change 
 # the route target service name
+
+# Patch deploymentConfig of postgresql to reference the correct secret
+
+
+
 patches:
 - patch: |-
     - op: replace
@@ -32,29 +37,24 @@ patches:
       value: dev-summit-demo
   target:
     kind: Route
-
-# Patch deploymentConfig of postgresql to reference the correct secret
 - patch: |-
     - op: replace
       path: /spec/selector/name
       value: dev-summit-db
   target:
     kind: DeploymentConfig
-
 - patch: |-
     - op: replace
       path: /spec/template/spec/containers/0/env/0/valueFrom/secretKeyRef/name
       value: dev-summit-db
   target:
     kind: DeploymentConfig
-
 - patch: |-
     - op: replace
       path: /spec/template/spec/containers/0/env/1/valueFrom/secretKeyRef/name
       value: dev-summit-db
   target:
     kind: DeploymentConfig
-
 - patch: |-
     - op: replace
       path: /spec/template/spec/containers/0/env/2/valueFrom/secretKeyRef/name
