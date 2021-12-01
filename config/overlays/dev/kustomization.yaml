@@ -10,7 +10,7 @@ commonLabels:
 # generate a configmap 
 configMapGenerator:
 - literals:
-  - QUARKUS_DATASOURCE_REACTIVE_URL=vertx-reactive:postgresql://dev-summit-db/summitdb
+  - QUARKUS_DATASOURCE_REACTIVE_URL=vertx-reactive:postgresql://summit-db/summitdb
   - QUARKUS_DATASOURCE_USERNAME=summit
   - QUARKUS_DATASOURCE_PASSWORD=summit
   - QUARKUS_DATASOURCE_DB-KIND=postgresql

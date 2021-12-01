@@ -1,0 +1,40 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: summit-dev
+  namespace: openshift-gitops
+spec:
+  destination:
+    namespace: summit-dev
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    path: config/overlays/dev
+    repoURL: https://github.com/wpernath/summit-connect-config.git
+    targetRevision: HEAD
+  syncPolicy:
+    automated:
+      prune: true
+    syncOptions:
+    - PruneLast=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: summit-stage
+  namespace: openshift-gitops
+spec:
+  destination:
+    namespace: summit-stage
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    path: config/overlays/stage
+    repoURL: https://github.com/wpernath/summit-connect-config.git
+    targetRevision: HEAD
+  syncPolicy:
+    automated:
+      prune: true
+    syncOptions:
+    - PruneLast=true
+
