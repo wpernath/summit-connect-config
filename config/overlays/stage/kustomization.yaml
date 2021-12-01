@@ -83,3 +83,14 @@ patches:
   target:
     kind: DeploymentConfig
 
+# This patch is required to make sure, the service is finding the DeploymentConfig
+# It's NOT a good idea to use DeploymentConfigs with Kustomize!
+- patch: |-
+    - op: add
+      path: /spec/selector
+      value:
+        variant: stage
+        org: wanja.org
+        name: stage-summit-db
+  target:
+    kind: DeploymentConfig

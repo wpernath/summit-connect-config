@@ -37,7 +37,7 @@ patches:
       value: dev-summit-demo
   target:
     kind: Route
-    
+
 - patch: |-
     - op: replace
       path: /spec/selector/name
@@ -65,6 +65,7 @@ patches:
       value: dev-summit-db
   target:
     kind: DeploymentConfig
+
 - patch: |-
     - op: replace
       path: /spec/template/spec/containers/0/env/1/valueFrom/secretKeyRef/name
@@ -75,5 +76,17 @@ patches:
     - op: replace
       path: /spec/template/spec/containers/0/env/2/valueFrom/secretKeyRef/name
       value: dev-summit-db
+  target:
+    kind: DeploymentConfig
+
+# This patch is required to make sure, the service is finding the DeploymentConfig
+# It's NOT a good idea to use DeploymentConfigs with Kustomize!
+- patch: |-
+    - op: add
+      path: /spec/selector
+      value:
+        variant: development
+        org: wanja.org
+        name: dev-summit-db
   target:
     kind: DeploymentConfig
