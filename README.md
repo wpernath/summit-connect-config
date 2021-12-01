@@ -12,7 +12,7 @@ Then create a summit-ci namespace via
 $ oc new-project summit-ci
 ```
 
-Then execute `pipelines.sh` from the `tekton` folder like: 
+Then execute `pipeline.sh` from the `tekton` folder like: 
 
 ```bash
 $ ./pipeline.sh init \
