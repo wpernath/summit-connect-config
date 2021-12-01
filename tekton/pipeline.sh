@@ -128,9 +128,6 @@ done
 command.init() {
   # This script imports the necessary files into the current project 
   pwd
-  oc apply -f infra/maven-settings-cm.yaml
-  oc apply -f infra/maven-artifact-cache-pvc.yaml
-  oc apply -f infra/sa.yaml
 
   # prepare secrets for SA
   if [ $GIT_USER = "" ]; then
@@ -164,16 +161,8 @@ EOF
 
   oc apply -f /tmp/secret.yaml
 
-  # apply tasks 
-  oc apply -f tasks/maven-task.yaml
-  oc apply -f tasks/extract-digest-task.yaml
-  oc apply -f tasks/git-update-deployment.yaml
-  oc apply -f tasks/create-release.yaml
-  oc apply -f tasks/extract-digest-from-kustomize-task.yaml
-
-  # apply pipelines
-  oc apply -f pipelines/dev-pipeline.yaml
-  oc apply -f pipelines/stage-release.yaml
+  # apply all tekton related
+  oc apply -k .
 }
 
 

@@ -1,0 +1,37 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: summit-setup-apps
+  namespace: openshift-gitops
+spec:
+  destination:
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    path: argocd
+    repoURL: https://github.com/wpernath/summit-connect-config.git
+    targetRevision: HEAD
+  syncPolicy:
+    automated:
+      prune: false
+    syncOptions:
+    - PruneLast=false
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: summit-setup-tekton
+  namespace: openshift-gitops
+spec:
+  destination:
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    path: tekton
+    repoURL: https://github.com/wpernath/summit-connect-config.git
+    targetRevision: HEAD
+  syncPolicy:
+    automated:
+      prune: false
+    syncOptions:
+    - PruneLast=false
