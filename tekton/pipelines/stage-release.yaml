@@ -105,7 +105,7 @@ spec:
         - name: release-name
           value: "$(params.release-name)"
         - name: old-image
-          value: quay.io/wpernath/person-service:latest
+          value: quay.io/wpernath/summit-demo:latest
         - name: new-image
           value: "$(params.target-image)"
         - name: digest

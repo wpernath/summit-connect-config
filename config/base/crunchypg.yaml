@@ -1,7 +1,7 @@
 apiVersion: postgres-operator.crunchydata.com/v1beta1
 kind: PostgresCluster
 metadata:
-  name: summit-db
+  name: summitdb
 spec:
   backups:
     pgbackrest:
@@ -21,12 +21,9 @@ spec:
         resources:        
           requests:
             storage: 1Gi
-      name: summit-db
+      name: summitdb
       replicas: 1
       
   port: 5432
-  users: 
-    - name: summit
-      password: summit
   postgresVersion: 13
   openshift: true
