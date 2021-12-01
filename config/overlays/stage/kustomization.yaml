@@ -25,9 +25,9 @@ configMapGenerator:
 
 # replace the image tag of the container with stage
 images:
-- digest: sha256:3b2ee695dd0fedd3bd7bdee3f1bab84756550eb1c8f9ddfb7c9f3cae70ea4945
+- digest: sha256:151624c8da77acddad140a0556cf6b2dff11634d3f66632be140a5fc5773683a
   name: quay.io/wpernath/summit-demo:latest
-  newName: quay.io/wpernath/summit-demo:v1.0.2-final2
+  newName: quay.io/wpernath/summit-demo:v1.0.2-final3
 
 # apply some patches
 
