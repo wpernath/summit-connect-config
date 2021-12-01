@@ -12,4 +12,14 @@ Then create a summit-ci namespace via
 $ oc new-project summit-ci
 ```
 
+Then execute `pipelines.sh` from the `tekton` folder like:
+
+```bash
+$ ./pipeline.sh init \
+    --git-user <your git user> \
+    --git-password <your password> \
+    --registry-user <your registry user> \
+    --registry-password <your registry password>
+```
+
 
