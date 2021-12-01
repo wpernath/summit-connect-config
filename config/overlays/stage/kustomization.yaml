@@ -91,6 +91,6 @@ patches:
       value:
         variant: stage
         org: wanja.org
-        name: stage-summit-db
+        name: summit-db
   target:
     kind: DeploymentConfig

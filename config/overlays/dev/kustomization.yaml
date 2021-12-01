@@ -85,8 +85,6 @@ patches:
     - op: add
       path: /spec/selector
       value:
-        variant: development
-        org: wanja.org
-        name: dev-summit-db
+        name: summit-db
   target:
     kind: DeploymentConfig
