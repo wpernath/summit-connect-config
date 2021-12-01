@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    openshift.io/description: ""
+    openshift.io/display-name: "CI Summit Connect"
+  labels:
+    kubernetes.io/metadata.name: summit-ci
+  name: summit-cicd
+spec:
+  finalizers:
+  - kubernetes

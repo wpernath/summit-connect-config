@@ -1,0 +1,22 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: summit-cicd
+
+resources:
+# infra resources
+- infra/ns.yaml
+- infra/sa.yaml
+- infra/maven-artifact-cache-pvc.yaml
+- infra/maven-settings-cm.yaml
+
+# tasks
+- tasks/create-release.yaml
+- tasks/extract-digest-from-kustomize-task.yaml
+- tasks/extract-digest-task.yaml
+- tasks/git-update-deployment.yaml
+- tasks/maven-task.yaml
+
+# pipelines
+- pipelines/dev-pipeline.yaml
+- pipelines/stage-release.yaml
+

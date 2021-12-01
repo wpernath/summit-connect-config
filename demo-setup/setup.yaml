@@ -25,6 +25,7 @@ metadata:
 spec:
   destination:
     server: https://kubernetes.default.svc
+    namespace: summit-cicd
   project: default
   source:
     path: tekton
