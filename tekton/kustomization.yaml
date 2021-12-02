@@ -20,3 +20,5 @@ resources:
 - pipelines/dev-pipeline.yaml
 - pipelines/stage-release.yaml
 
+# please note, you still have to call pipeline.sh init to generate the secrets!
+
