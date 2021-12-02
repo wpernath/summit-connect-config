@@ -5,6 +5,7 @@ namespace: summit-cicd
 resources:
 # infra resources
 - infra/ns.yaml
+- infra/roles.yaml
 - infra/sa.yaml
 - infra/maven-artifact-cache-pvc.yaml
 - infra/maven-settings-cm.yaml
