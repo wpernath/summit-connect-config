@@ -162,7 +162,7 @@ EOF
   oc apply -f /tmp/secret.yaml
 
   # apply all tekton related
-  oc apply -k .
+  #oc apply -k .
 }
 
 
