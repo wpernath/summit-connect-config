@@ -12,9 +12,11 @@ Then execute the following to create the summit-cicd namespace and everything el
 $ oc apply -f demo-setup/setup.yaml
 ```
 
-This will create and initialize the ArgoCD applications including namespaces and roles for this. It will also install a PostgreSQL server in each namespace. 
+This will create and initialize the following ArgoCD applications:
+- summit-setup-apps: This will create the `argocd/summit-apps.yaml` ArgoCD applications
+- summit-setup-tekton: This will create and initialize the `summit-cicd` namespace with the tekton pipelines.
 
-After a while you should be able to get into the `summit-cicd` namespace. T
+After a while you should be able to get into the `summit-cicd` namespace.
 Then execute `pipeline.sh` from the `tekton` folder to create the `Secret` and `ServiceAccount`s like : 
 
 ```bash
@@ -32,6 +34,19 @@ Once everything was setup correctly, ArgoCD will automatically install the corre
 
 
 ## Workflow / Demo flow
+### Using ArgoCD from OpenShift-GitOps
+After you've installed the openshift-gitops operator, please go to the preconfigred ArgoCD instance:
+
+```bash
+$ oc get route openshift-gitops-server -ojsonpath='{.spec.host}' -n openshift-gitops
+```
+
+And use the admin password:
+
+```bash
+$ oc get secret openshift-gitops-cluster -n openshift-gitops -ojsonpath='{.data.admin\.password}' | base64 -d
+```
+
 
 ### Building a new dev image
 To build a new development version, please do your changes in the `summit-connect-quarkus-demo` Git repository and commit them. Then execute the following to start the `dev-pipeline`:
@@ -86,7 +101,8 @@ If you want to use your own clones, you need to change the following files accor
 - `tekton/pipelines/dev-pipeline.yaml`: Default image repos and github sources point to my repos
 - `tekton/pipelines/stage-release.yaml`: Default image repo and github config source point to my repos
 
-To start the pipelines, you need set the parameters accordingly:
+To start the pipelines, you need set the parameters accordingly (or you need to change the defaults in the pipeline.yaml's):
 
 ```bash
+
 ```
