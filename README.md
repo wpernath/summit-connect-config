@@ -101,8 +101,8 @@ If you want to use your own clones, you need to change the following files accor
 - `tekton/pipelines/dev-pipeline.yaml`: Default image repos and github sources point to my repos
 - `tekton/pipelines/stage-release.yaml`: Default image repo and github config source point to my repos
 
-To start the pipelines, you need set the parameters accordingly (or you need to change the defaults in the pipeline.yaml's):
+To start the pipelines, you need set the default parameters accordingly. Or you're chaging the `tekton/pipelines.sh build|stage` parts of the script to pass the parameters on start.
 
-```bash
 
-```
+** NOTE: You should be able to build _any_ default Quarkus application with this setup **
+
