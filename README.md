@@ -7,14 +7,18 @@ To install and use this demo from scratch, have an OpenShift 4.9 server availabl
 - OpenShift Pipelines
 - OpenShift GitOps
 
-Then create a summit-ci namespace via
+Then execute the following to create the summit-cicd namespace and everything else:
 ```bash
-$ oc new-project summit-ci
+$ oc apply -f demo-setup/setup.yaml
 ```
 
-Then execute `pipeline.sh` from the `tekton` folder like: 
+This will create and initialize the ArgoCD applications including namespaces and roles for this. It will also install a PostgreSQL server in each namespace. 
+
+After a while you should be able to get into the `summit-cicd` namespace. T
+Then execute `pipeline.sh` from the `tekton` folder to create the `Secret` and `ServiceAccount`s like : 
 
 ```bash
+$ oc project summit-cicd
 $ ./pipeline.sh init \
     --git-user <your git user> \
     --git-password <your password> \
@@ -23,14 +27,6 @@ $ ./pipeline.sh init \
 ```
 
 This installs everything necessary for executing the build and the stage pipelines including secrets etc.
-
-The final step is to install the demo resources. This can be done by executing 
-
-```bash
-$ oc apply -k argocd
-```
-
-This will create and initialize the ArgoCD applications including namespaces and roles for this. It will also install a PostgreSQL server in each namespace. 
 
 Once everything was setup correctly, ArgoCD will automatically install the corresponding `summit-demo` in the correct namespace. 
 
@@ -64,7 +60,33 @@ ArgoCD will detect the changes and should update `summit-stage` namespace accord
 ## Sweet spots
 IMHO, the biggest sweet spot of this demo is running 
 ```bash
-$ oc apply -k argocd
+$ oc apply -f demo-setup/setup.yaml
 ```
 
 To install more or less the complete environment with DEV and STAGE apps running within a few seconds. 
+
+## Uninstall everything
+To uninstall everything, you simply need to delete the main two ArgoCD Applications by executing:
+
+```bash
+$ oc delete Application/summit-setup-apps -n openshift-gitops
+$ oc delete Application/summit-setup-tekton -n openshift-gitops
+```
+
+## Note on using this demo with your own setup
+Right now, everything is tied to use my repositories:
+- quay.io/wpernath/summit-demo
+- github.com/wpernath/summit-connect-config
+- github.com/wpernath/summit-connect-quarkus-demo
+
+If you want to use your own clones, you need to change the following files accordingly:
+- `demo-setup/setup.yaml`: Both apps point to my github.com
+- `argocd/summit-apps.yaml`: Both apps point to my github.com
+- `tekton/intra/maven-settings-cm.yaml`: Points to my nexus repo in ci namespace
+- `tekton/pipelines/dev-pipeline.yaml`: Default image repos and github sources point to my repos
+- `tekton/pipelines/stage-release.yaml`: Default image repo and github config source point to my repos
+
+To start the pipelines, you need set the parameters accordingly:
+
+```bash
+```
