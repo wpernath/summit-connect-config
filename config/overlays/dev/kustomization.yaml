@@ -18,7 +18,7 @@ configMapGenerator:
 
 # replace the image tag of the container with latest
 images:
-- digest: sha256:23607fa51abcb060a07422eaf198e0adb73ed772b6cde5017f5c597b291d0ae9
+- digest: sha256:8f8ab021d1e13ea5fbfda1f56633d51c493fdfc9818226bbe67d1efdfcc78295
   name: quay.io/wpernath/summit-demo:latest
   newName: quay.io/wpernath/summit-demo:latest
 
