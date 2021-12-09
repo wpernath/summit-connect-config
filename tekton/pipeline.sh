@@ -13,10 +13,10 @@ GIT_PASSWORD=""
 PIPELINE=dev-pipeline
 CONTEXT_DIR=the-source
 IMAGE_NAME=quay.io/wpernath/summit-demo
-IMAGE_USER=wpernath
-IMAGE_PASSWORD=
+IMAGE_USER=""
+IMAGE_PASSWORD=""
 TARGET_NAMESPACE=summit-dev
-FORCE_SETUP=false
+FORCE_SETUP="false"
 
 valid_command() {
   local fn=$1; shift
@@ -75,8 +75,8 @@ while (( "$#" )); do
       shift
       ;;
     -f|--force)
-      FORCE_SETUP=true
-      shift 2
+      FORCE_SETUP="true"
+      shift 1
       ;;
     -c|--context-dir)
       CONTEXT_DIR=$2
@@ -136,11 +136,34 @@ command.init() {
   # This script imports the necessary files into the current project 
   pwd
 
+echo "Using parameters:"
+echo "   GIT_USER    : $GIT_USER"
+echo "   GIT_PASSWORD: $GIT_PASSWORD"
+echo "   REG_USER    : $IMAGE_USER"
+echo "   REG_PASSWORD: $IMAGE_PASSWORD"
+echo "   FORCE_SETUP : $FORCE_SETUP "
+
   # prepare secrets for SA
-  if [ $GIT_USER = "" ]; then
+  if [ -z $GIT_USER ]; then 
     command.help
-    err "You have to provide GIT credentials via --git-user and --git-password"
+    err "You have to provide credentials via --git-user"
   fi
+
+  if [ -z $GIT_PASSWORD ]; then 
+    command.help
+    err "You have to provide credentials via --git-password"
+  fi
+
+  if [ -z $IMAGE_USER ]; then 
+    command.help
+    err "You have to provide credentials via --registry-user"
+  fi
+
+  if [ -z $IMAGE_PASSWORD ]; then 
+    command.help
+    err "You have to provide credentials via --registry-password"
+  fi
+
 
   cat > /tmp/secret.yaml <<-EOF
 apiVersion: v1
@@ -167,9 +190,14 @@ stringData:
 EOF
 
   # apply all tekton related setup
-  if [ $FORCE_SETUP = "true" ]; then
+  if [[ "$FORCE_SETUP" == "true" ]]; then
     info "Creating demo setup by calling $SCRIPT_DIR/kustomization.yaml"
-    oc apply -f "$SCRIPT_DIR/demo-setup/setup.yaml"
+    oc apply -f "$SCRIPT_DIR/../demo-setup/setup.yaml"
+
+    while :; do
+      oc get ns/summit-cicd > /dev/null && break
+      sleep 2
+    done
   fi
 
   oc apply -f /tmp/secret.yaml -n summit-cicd
@@ -200,7 +228,7 @@ spec:
   serviceAccountName: pipeline-bot
 EOF
 
-    oc apply -f /tmp/stage-pr.yaml
+    oc apply -f /tmp/stage-pr.yaml -n summit-cicd
 }
 
 command.build() {
@@ -225,7 +253,7 @@ spec:
   serviceAccountName: pipeline-bot
 EOF
 
-    oc apply -f /tmp/pipelinerun.yaml
+    oc apply -f /tmp/pipelinerun.yaml -n summit-cicd
 }
 
 main() {
