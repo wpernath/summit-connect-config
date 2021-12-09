@@ -97,7 +97,7 @@ Right now, everything is tied to use my repositories:
 If you want to use your own clones, you need to change the following files accordingly:
 - `demo-setup/setup.yaml`: Both apps point to my github.com
 - `argocd/summit-apps.yaml`: Both apps point to my github.com
-- `tekton/intra/maven-settings-cm.yaml`: Points to my nexus repo in ci namespace
+- `tekton/intra/maven-settings-cm.yaml`: Points to nexus.summit-cicd:8081, which gets created by setup.yaml
 - `tekton/pipelines/dev-pipeline.yaml`: Default image repos and github sources point to my repos
 - `tekton/pipelines/stage-release.yaml`: Default image repo and github config source point to my repos
 

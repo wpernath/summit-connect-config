@@ -16,6 +16,7 @@ IMAGE_NAME=quay.io/wpernath/summit-demo
 IMAGE_USER=wpernath
 IMAGE_PASSWORD=
 TARGET_NAMESPACE=summit-dev
+FORCE_SETUP=false
 
 valid_command() {
   local fn=$1; shift
@@ -39,7 +40,7 @@ command.help() {
       pipeline.sh [command] [options]
   
   Examples:
-      pipeline.sh init --git-user <user> --git-password <pwd> --registry-user <user> --registry-password
+      pipeline.sh init [--force] --git-user <user> --git-password <pwd> --registry-user <user> --registry-password
       pipeline.sh build -u wpernath -p <nope> 
       pipeline.sh stage -r v1.2.5 -g <config-git-rep> -i <target-image>
       pipeline.sh logs
@@ -61,6 +62,8 @@ command.help() {
       -t, --target-namespace        Which target namespace to start the app ($TARGET_NAMESPACE)
       -g, --git-repo                Which quarkus repository to clone ($GIT_URL)
       -r, --git-revision            Which git revision to use ($GIT_REVISION)
+      -f, --force                   By default, this script assumes, you've created demo-setup/setup.yaml
+                                    if you haven't, use this flag to force the setup of the summit-cicd NS
 
 EOF
 }
@@ -70,6 +73,10 @@ while (( "$#" )); do
     build|stage|logs|init)
       COMMAND=$1
       shift
+      ;;
+    -f|--force)
+      FORCE_SETUP=true
+      shift 2
       ;;
     -c|--context-dir)
       CONTEXT_DIR=$2
@@ -159,10 +166,14 @@ stringData:
   password: $IMAGE_PASSWORD
 EOF
 
-  oc apply -f /tmp/secret.yaml
+  # apply all tekton related setup
+  if [ $FORCE_SETUP = "true" ]; then
+    info "Creating demo setup by calling $SCRIPT_DIR/kustomization.yaml"
+    oc apply -f "$SCRIPT_DIR/demo-setup/setup.yaml"
+  fi
 
-  # apply all tekton related
-  #oc apply -k .
+  oc apply -f /tmp/secret.yaml -n summit-cicd
+
 }
 
 
